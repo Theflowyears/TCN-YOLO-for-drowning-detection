@@ -1,0 +1,16 @@
+# 先降低组合增强强度
+mosaic: 0.5
+mixup: 0.1
+copy_paste: 0.15
+
+degrees: 10
+shear: 2
+perspective: 0.0003
+flipud: 0.1
+fliplr: 0.5
+scale: 0.5
+translate: 0.1
+
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4

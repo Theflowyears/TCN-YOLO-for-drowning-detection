@@ -1,0 +1,20 @@
+# 溺水检测数据集配置（Ultralytics YOLO 格式）
+#
+# `path` 是数据集根目录。src/training/yolo/train.py 会把它解析成绝对路径后再交给
+# ultralytics，所以这里推荐写「相对项目根目录」的路径；也可以用环境变量覆盖：
+#   Windows :  set DRONE_DATA_ROOT=E:/datasets/drowning-DST1005
+#   Linux/mac :  export DRONE_DATA_ROOT=/data/drowning-DST1005
+#
+# ⚠ 若你直接执行 `yolo detect train data=src/training/yolo/data.yaml`，
+#   ultralytics 会把相对 `path` 按它自己的 DATASETS_DIR 解析，此时请写绝对路径。
+path: data/drowning-DST1005
+
+train:
+  - images/train
+  - images/train_aug      # 由 src/training/yolo/offline_augment.py 生成
+
+val: images/valid
+test: images/test
+
+nc: 3
+names: ['Swimming', 'Drowning', 'Person out of water']

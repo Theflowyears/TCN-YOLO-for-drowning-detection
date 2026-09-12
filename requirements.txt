@@ -1,0 +1,43 @@
+# 项目运行依赖
+#
+# 实测通过的版本组合（开发环境）：
+#   Python 3.14.0 / torch 2.9.0+cu126 / torchvision 0.24.0+cu126
+#   ultralytics 8.4.61 / albumentations 2.0.8 / opencv-python 4.13.0.92 / numpy 2.2.6
+#
+# 安装（CPU 或本机已有 CUDA）：
+#   pip install -r requirements.txt
+# 安装 CUDA 12.6 版 torch（推荐，需 NVIDIA 驱动 >= 525）：
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+#   pip install -r requirements.txt
+#
+# ⚠ 若要用 scripts/run_label_studio.bat 做标注，请改用 Python <= 3.12 的独立环境：
+#   label-studio 依赖的 django-environ 使用了 3.12 起移除的 pkgutil.find_loader。
+
+# 深度学习框架
+torch>=2.0
+torchvision>=0.15
+
+# YOLO 检测（ultralytics 会带入自身依赖）
+ultralytics>=8.3,<9
+
+# 图像处理
+opencv-python>=4.8
+numpy>=1.24
+pillow>=10.0
+
+# 数据增强：custom_augs.py 的 WaterRipple 实现了 albumentations 2.x 的
+# apply_to_bboxes(..., rows=, cols=) 接口，必须 >=2.0
+albumentations>=2.0,<3
+
+# 训练与数据脚本
+tqdm>=4.65
+pyyaml>=6.0
+
+# 训练曲线可视化（model_def.py / train_tcn.py 可选依赖）
+matplotlib>=3.7
+
+# test.py 云端告警推送
+requests>=2.31
+
+# 标注工具（建议单独装在 Python <=3.12 环境里，见文件顶部说明）
+# label-studio>=1.12

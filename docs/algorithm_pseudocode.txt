@@ -1,0 +1,57 @@
+算法 1：图交互与自适应门控融合判决
+（对应 src/training/tcn/model_def.py 中的 GraphInteraction / GatedFusionModule /
+  MultiScaleTemporalBlock / DrowningTCNModel.classify_sequences）
+
+注：原始快照中本段伪代码存放在 docs/img.html，但该文件不含任何 HTML 标记，
+    用浏览器打开会被当作纯文本丢弃排版，故快照版重命名为 .txt。
+
+--------------------------------------------------------------------------------
+输入：时序特征序列 X (N×D×T)，边界框 boxes (N×4)，
+      YOLO 置信度 y_conf (N,)，阈值 τ
+输出：溺水标签 label
+
+function GraphInteraction(F_last, boxes)
+      N ← F_last.shape[0]
+      for i ← 1..N do
+          centers[i] ← ((x1+x2)/2, (y1+y2)/2)   // 来自 boxes[i]
+      end for
+      for i ← 1..N, j ← 1..N do
+          D[i][j] ← ‖centers[i] − centers[j]‖₂
+          A[i][j] ← exp(−D[i][j] / σ)            // σ 为平滑参数（代码中 σ=100）
+      end for
+      for i ← 1..N do
+          m[i] ← sum_{j}( A[i][j] · F_last[j] )  // 加权邻居聚合
+          F_graph[i] ← NodeUpdate( concat(F_last[i], m[i]) )
+      end for
+      return F_graph
+ end function
+
+ function GatedFusion(y_conf, P_tcn)
+     N ← y_conf.shape[0]
+     for i ← 1..N do
+         z_y ← ReLU( W_y · y_conf[i] )
+         z_t ← ReLU( W_t · P_tcn[i] )
+         g   ← Sigmoid( W_gate · concat(y_conf[i], P_tcn[i]) )
+         z_fused ← g ⊙ z_y + (1−g) ⊙ z_t
+         P_final[i] ← Softmax( W_fuse · z_fused )
+     end for
+     return P_final
+ end function
+
+ // 主流程
+ H ← MultiScaleTCN(X)                     // N×C×T
+ F_last ← H[:, :, −1]                     // 取最后一帧特征 N×C
+ F_graph ← GraphInteraction(F_last, boxes)
+ P_tcn ← Softmax( Classifier(F_graph) )   // N×2
+
+ P_final ← GatedFusion(y_conf, P_tcn)
+
+ for i ← 1..N do
+     if max(P_final[i]) > τ and argmax(P_final[i]) == drowning_class then
+         label[i] ← "溺水"
+     else
+         label[i] ← "正常"
+     end if
+ end for
+ return label
+--------------------------------------------------------------------------------
