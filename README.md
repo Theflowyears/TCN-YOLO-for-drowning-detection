@@ -418,6 +418,6 @@ ultralytics 8.4.61），全部通过：
   title  = {UAV-based Drowning Detection with YOLO and Temporal Convolutional Networks},
   year   = {2026},
   note   = {Snapshot release v1.0.0-snapshot},
-  url    = {[https://github.com/<your-user>/<your-repo>](https://github.com/Theflowyears/TCN-YOLO-for-drowning-detection)}
+  url    = {(https://github.com/Theflowyears/TCN-YOLO-for-drowning-detection)}
 }
 ```
